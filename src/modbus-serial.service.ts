@@ -47,24 +47,42 @@ export class ModbusSerialService {
   }
 
   public async readHoldingRegister(id: number, address: number): Promise<number>;
+  public async readHoldingRegister(id: number, address: number, length: number): Promise<number>;
+  public async readHoldingRegister(id: number, address: number, bcd: boolean): Promise<number>;
   public async readHoldingRegister(
     id: number,
     address: number,
     length: number,
+    bcd: boolean,
   ): Promise<Array<number>>;
   public async readHoldingRegister(
     id: number,
     address: number,
-    length: number = 1,
+    lengthOrBcd?: number | boolean,
+    bcd?: boolean,
   ): Promise<number | Array<number>> {
+    let length = 1;
+    if (typeof lengthOrBcd === 'number') {
+      length = lengthOrBcd;
+    } else if (typeof lengthOrBcd === 'boolean') {
+      bcd = lengthOrBcd;
+    }
     if (length < 1) {
       throw new Error('Length must be greater than 0');
     }
     this._client.setID(id);
     const result = await this._client.readHoldingRegisters(address, length);
+    const bcd2dec = (bcd: number) => parseInt(bcd.toString(16), 10);
     if (length === 1) {
+      if (bcd) {
+        return bcd2dec(result.data[0]);
+      }
       return result.data[0];
     }
-    return result.data;
+    if (bcd) {
+      return result.data.map(d => bcd2dec(d));
+    } else {
+      return result.data;
+    }
   }
 }

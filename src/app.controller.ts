@@ -1,4 +1,4 @@
-import { Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, DefaultValuePipe, Get, Param, ParseBoolPipe, ParseIntPipe, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ModbusSerialServiceResolver } from './modbus-serial-service-resolver.service';
 
@@ -32,9 +32,10 @@ export class AppController {
     @Param('deviceId') deviceId: string,
     @Param('modbusId') modbusId: number,
     @Param('register') register: number,
-    @Query('length', new DefaultValuePipe(1), ParseIntPipe) length: number | undefined,
+    @Query('length', new DefaultValuePipe(1), ParseIntPipe) length: number,
+    @Query('bcd', new DefaultValuePipe(false), ParseBoolPipe) bcd: boolean,
   ): Promise<number | Array<number>> {
     const serialService = await this._serialResolver.getModbusSerialService(deviceId);
-    return await serialService.readHoldingRegister(modbusId, register, length);
+    return await serialService.readHoldingRegister(modbusId, register, length, bcd);
   }
 }
