@@ -45,4 +45,26 @@ export class ModbusSerialService {
     }
     return result.data;
   }
+
+  public async readHoldingRegister(id: number, address: number): Promise<number>;
+  public async readHoldingRegister(
+    id: number,
+    address: number,
+    length: number,
+  ): Promise<Array<number>>;
+  public async readHoldingRegister(
+    id: number,
+    address: number,
+    length: number = 1,
+  ): Promise<number | Array<number>> {
+    if (length < 1) {
+      throw new Error('Length must be greater than 0');
+    }
+    this._client.setID(id);
+    const result = await this._client.readHoldingRegisters(address, length);
+    if (length === 1) {
+      return result.data[0];
+    }
+    return result.data;
+  }
 }

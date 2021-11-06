@@ -26,4 +26,16 @@ export class AppController {
     return await serialService
       .readCoil(modbusId, coil);
   }
+
+  @Get('devices/serial/:deviceId/:modbusId/holdingRegister/:register')
+  async getHoldingRegister(
+    @Param('deviceId') deviceId: string,
+    @Param('modbusId') modbusId: number,
+    @Param('register') register: number,
+  ): Promise<number> {
+    const serialService = await this._serialResolver
+      .getModbusSerialService(deviceId);
+    return await serialService
+      .readHoldingRegister(modbusId, register);
+  }
 }
