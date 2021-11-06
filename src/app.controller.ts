@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ModbusSerialServiceResolver } from './modbus-serial-service-resolver.service';
 
@@ -21,10 +21,10 @@ export class AppController {
     @Param('modbusId') modbusId: number,
     @Param('coil') coil: number,
   ): Promise<boolean> {
-    const serialService = await this._serialResolver
-      .getModbusSerialService(deviceId);
-    return await serialService
-      .readCoil(modbusId, coil);
+    const serialService = await this._serialResolver.getModbusSerialService(
+      deviceId,
+    );
+    return await serialService.readCoil(modbusId, coil);
   }
 
   @Get('devices/serial/:deviceId/:modbusId/holdingRegister/:register')
@@ -32,10 +32,9 @@ export class AppController {
     @Param('deviceId') deviceId: string,
     @Param('modbusId') modbusId: number,
     @Param('register') register: number,
-  ): Promise<number> {
-    const serialService = await this._serialResolver
-      .getModbusSerialService(deviceId);
-    return await serialService
-      .readHoldingRegister(modbusId, register);
+    @Query('length', new DefaultValuePipe(1), ParseIntPipe) length: number | undefined,
+  ): Promise<number | Array<number>> {
+    const serialService = await this._serialResolver.getModbusSerialService(deviceId);
+    return await serialService.readHoldingRegister(modbusId, register, length);
   }
 }
