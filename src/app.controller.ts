@@ -1,13 +1,13 @@
 import { Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { CommandBus } from '@nestjs/cqrs';
+import { QueryBus } from '@nestjs/cqrs';
 import { ReadHoldingRegistersQuery } from './modbus-read-holding-registers-query-handler';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly _config: ConfigService,
-    private readonly _commandBus: CommandBus,
+    private readonly _queryBus: QueryBus,
   ) {
   }
 
@@ -35,7 +35,7 @@ export class AppController {
     @Param('register') register: number,
     @Query('length', new DefaultValuePipe(1), ParseIntPipe) length: number,
   ): Promise<Array<number>> {
-    return await this._commandBus.execute(new ReadHoldingRegistersQuery(
+    return await this._queryBus.execute(new ReadHoldingRegistersQuery(
       deviceId,
       modbusId,
       register,
