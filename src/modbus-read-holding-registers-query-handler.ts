@@ -1,5 +1,5 @@
 import { ModuleRef } from '@nestjs/core';
-import { IQueryHandler } from '@nestjs/cqrs';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ModbusReadService } from './modbus-read-service';
 import { ModbusSerialService } from './modbus-serial.service';
 
@@ -13,6 +13,7 @@ export class ReadHoldingRegistersQuery {
   }
 }
 
+@QueryHandler(ReadHoldingRegistersQuery)
 export class ModbusReadHoldingRegistersQueryHandler
   extends ModbusReadService<number>
   implements IQueryHandler<ReadHoldingRegistersQuery> {
