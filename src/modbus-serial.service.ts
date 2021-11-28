@@ -16,7 +16,7 @@ export class ModbusSerialService {
   ): Promise<ModbusSerialService> {
     const service = new ModbusSerialService();
     const { path, ...opts } = serialOptions;
-    await service._client.connectRTUBuffered(path, opts);
+    // await service._client.connectRTUBuffered(path, opts);
     return service;
   }
 
@@ -67,5 +67,14 @@ export class ModbusSerialService {
   ): Promise<any> {
     this._client.setID(id);
     await this._client.writeRegisters(address, data);
+  }
+
+  public async writeCoils(
+    id: number,
+    address: number,
+    data: boolean[]
+  ): Promise<any> {
+    this._client.setID(id);
+    await this._client.writeCoils(address, data);
   }
 }

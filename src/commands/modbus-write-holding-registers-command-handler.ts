@@ -6,7 +6,7 @@ export class WriteHoldingRegisterCommand extends Command<number> {
 }
 
 @CommandHandler(WriteHoldingRegisterCommand)
-export class WriteHoldingRegistersCommandHandler
+export class ModbusWriteHoldingRegistersCommandHandler
   implements ICommandHandler<WriteHoldingRegisterCommand> {
   constructor(private readonly _modbusProxy: ModbusProxy) {
   }

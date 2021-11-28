@@ -1,13 +1,11 @@
-import { IQueryHandler } from '@nestjs/cqrs';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ModbusProxy } from '../modbus-proxy.service';
+import { Query } from './query';
 
-interface ReadCoilsQuery {
-  deviceId: string;
-  modbusId: number;
-  address: number;
-  length: number;
+export class ReadCoilsQuery extends Query {
 }
 
+@QueryHandler(ReadCoilsQuery)
 export class ModbusReadCoilsQueryHandler
   implements IQueryHandler<ReadCoilsQuery> {
   constructor(private readonly _modbusProxy: ModbusProxy) {

@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { WriteCoilsCommand } from './commands/modbus-write-colis-command-handler';
 import { WriteHoldingRegisterCommand } from './commands/modbus-write-holding-registers-command-handler';
+import { ReadCoilsQuery } from './queries/modbus-read-coils-query-handler';
 import { ReadHoldingRegistersQuery } from './queries/modbus-read-holding-registers-query-handler';
 
 @Controller()
@@ -28,17 +30,30 @@ export class AppController {
     return this._config.get('serialDevices');
   }
 
-  // @Get('devices/serial/:deviceId/:modbusId/coils/:coil')
-  // async getCoil(
-  //   @Param('deviceId') deviceId: string,
-  //   @Param('modbusId') modbusId: number,
-  //   @Param('coil') coil: number,
-  // ): Promise<boolean> {
-  //   const serialService = await this._serialResolver.getModbusSerialService(
-  //     deviceId,
-  //   );
-  //   return await serialService.readCoil(modbusId, coil);
-  // }
+  @Get('devices/serial/:deviceId/:modbusId/coils/:coil')
+  async getCoil(
+    @Param('deviceId') deviceId: string,
+    @Param('modbusId') modbusId: number,
+    @Param('coil') coil: number,
+    @Query('length', new DefaultValuePipe(1), ParseIntPipe) length: number,
+  ): Promise<boolean> {
+    return await this._queryBus.execute(new ReadCoilsQuery(
+      deviceId,
+      modbusId,
+      coil,
+      length,
+    ));
+  }
+
+  @Put('devices/serial/:deviceId/:modbusId/coils/:coil')
+  async setCoil(
+    @Param('deviceId') deviceId: string,
+    @Param('modbusId') modbusId: number,
+    @Param('coil') coil: number,
+    @Body(ParseArrayPipe) data: boolean[],
+  ): Promise<Array<number>> {
+    return await this._commandBus.execute(new WriteCoilsCommand(deviceId, modbusId, coil, data));
+  }
 
   @Get('devices/serial/:deviceId/:modbusId/holdingRegister/:register')
   async getHoldingRegister(
@@ -51,7 +66,7 @@ export class AppController {
       deviceId,
       modbusId,
       register,
-      length
+      length,
     ));
   }
 
