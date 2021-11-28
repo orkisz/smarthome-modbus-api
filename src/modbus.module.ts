@@ -1,10 +1,11 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { Configuration, SerialDeviceConfiguration } from './config/configuration';
+import { ModbusProxy } from './modbus-proxy.service';
 import { ModbusSerialService } from './modbus-serial.service';
 
 @Module({})
 export class ModbusModule {
-  static register(config: Configuration): DynamicModule {
+  static forRoot(config: Configuration): DynamicModule {
     const dynamicProviders = config.serialDevices.map((serialConfig: SerialDeviceConfiguration) => {
       return {
         provide: `serial-${serialConfig.id}`,
@@ -15,9 +16,11 @@ export class ModbusModule {
       module: ModbusModule,
       providers: [
         ...dynamicProviders,
+        ModbusProxy,
       ],
       exports: [
-        ...dynamicProviders
+        ...dynamicProviders,
+        ModbusProxy,
       ]
     };
   }

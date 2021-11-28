@@ -59,4 +59,13 @@ export class ModbusSerialService {
     this._client.setID(id);
     return (await this._client.readDiscreteInputs(address, length)).data;
   }
+
+  public async writeHoldingRegisters(
+    id: number,
+    address: number,
+    data: number[]
+  ): Promise<any> {
+    this._client.setID(id);
+    await this._client.writeRegisters(address, data);
+  }
 }

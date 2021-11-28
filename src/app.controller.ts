@@ -1,13 +1,25 @@
-import { Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Param,
+  ParseArrayPipe,
+  ParseIntPipe,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { QueryBus } from '@nestjs/cqrs';
-import { ReadHoldingRegistersQuery } from './modbus-read-holding-registers-query-handler';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { WriteHoldingRegisterCommand } from './commands/modbus-write-holding-registers-command-handler';
+import { ReadHoldingRegistersQuery } from './queries/modbus-read-holding-registers-query-handler';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly _config: ConfigService,
     private readonly _queryBus: QueryBus,
+    private readonly _commandBus: CommandBus,
   ) {
   }
 
@@ -41,5 +53,15 @@ export class AppController {
       register,
       length
     ));
+  }
+
+  @Put('devices/serial/:deviceId/:modbusId/holdingRegister/:register')
+  async setHoldingRegister(
+    @Param('deviceId') deviceId: string,
+    @Param('modbusId') modbusId: number,
+    @Param('register') register: number,
+    @Body(ParseArrayPipe) data: number[],
+  ): Promise<Array<number>> {
+    return await this._commandBus.execute(new WriteHoldingRegisterCommand(deviceId, modbusId, register, data));
   }
 }
