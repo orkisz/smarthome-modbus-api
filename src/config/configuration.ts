@@ -11,8 +11,15 @@ export interface SerialDeviceConfiguration {
   id: string;
 }
 
+export interface TCPDeviceConfiguration {
+  address: string;
+  port?: number;
+  id: string;
+}
+
 export interface Configuration {
   serialDevices: SerialDeviceConfiguration[];
+  tcpDevices: TCPDeviceConfiguration[];
 }
 
 export const configuration = () =>

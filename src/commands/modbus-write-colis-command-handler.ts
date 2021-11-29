@@ -12,7 +12,7 @@ export class ModbusWriteCoilsCommandHandler
   }
 
   async execute(command: WriteCoilsCommand): Promise<void> {
-    const modbus = await this._modbusProxy.getModbusSerial(command.deviceId);
+    const modbus = await this._modbusProxy.getModbus(command.deviceId);
     await modbus.writeCoils(command.modbusId, command.address, command.data);
   }
 }

@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { WriteCoilsCommand } from './commands/modbus-write-colis-command-handler';
 import { WriteHoldingRegisterCommand } from './commands/modbus-write-holding-registers-command-handler';
+import { SerialDeviceConfiguration, TCPDeviceConfiguration } from './config/configuration';
 import { ReadCoilsQuery } from './queries/modbus-read-coils-query-handler';
 import { ReadHoldingRegistersQuery } from './queries/modbus-read-holding-registers-query-handler';
 
@@ -26,11 +27,22 @@ export class AppController {
   }
 
   @Get('devices/serial')
-  getSerialDevices(): string {
-    return this._config.get('serialDevices');
+  getSerialDevices(): any {
+    return this._config.get<SerialDeviceConfiguration[]>('serialDevices').map((device) => ({
+      ...device,
+      deviceId: `serial-${device.id}`,
+    }));
   }
 
-  @Get('devices/serial/:deviceId/:modbusId/coils/:coil')
+  @Get('devices/tcp')
+  getTCPDevices(): any {
+    return this._config.get<TCPDeviceConfiguration[]>('tcpDevices').map((device) => ({
+      ...device,
+      deviceId: `tcp-${device.id}`,
+    }));
+  }
+
+  @Get('devices/:deviceId/:modbusId/coils/:coil')
   async getCoil(
     @Param('deviceId') deviceId: string,
     @Param('modbusId') modbusId: number,
@@ -45,7 +57,7 @@ export class AppController {
     ));
   }
 
-  @Put('devices/serial/:deviceId/:modbusId/coils/:coil')
+  @Put('devices/:deviceId/:modbusId/coils/:coil')
   async setCoil(
     @Param('deviceId') deviceId: string,
     @Param('modbusId') modbusId: number,
@@ -55,7 +67,7 @@ export class AppController {
     return await this._commandBus.execute(new WriteCoilsCommand(deviceId, modbusId, coil, data));
   }
 
-  @Get('devices/serial/:deviceId/:modbusId/holdingRegister/:register')
+  @Get('devices/:deviceId/:modbusId/holdingRegister/:register')
   async getHoldingRegister(
     @Param('deviceId') deviceId: string,
     @Param('modbusId') modbusId: number,
@@ -70,7 +82,7 @@ export class AppController {
     ));
   }
 
-  @Put('devices/serial/:deviceId/:modbusId/holdingRegister/:register')
+  @Put('devices/:deviceId/:modbusId/holdingRegister/:register')
   async setHoldingRegister(
     @Param('deviceId') deviceId: string,
     @Param('modbusId') modbusId: number,

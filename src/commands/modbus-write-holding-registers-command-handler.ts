@@ -12,7 +12,7 @@ export class ModbusWriteHoldingRegistersCommandHandler
   }
 
   async execute(command: WriteHoldingRegisterCommand): Promise<void> {
-    const modbus = await this._modbusProxy.getModbusSerial(command.deviceId);
+    const modbus = await this._modbusProxy.getModbus(command.deviceId);
     await modbus.writeHoldingRegisters(command.modbusId, command.address, command.data);
   }
 }

@@ -8,15 +8,29 @@ export interface SerialPortOptions {
   parity?: 'none' | 'even' | 'odd';
 }
 
-export class ModbusSerialService {
+export interface TCPOptions {
+  ip: string;
+  port?: number;
+}
+
+export class ModbusService {
   private _client: ModbusRTU;
 
-  public static async create(
+  public static async createSerial(
     serialOptions: SerialPortOptions,
-  ): Promise<ModbusSerialService> {
-    const service = new ModbusSerialService();
+  ): Promise<ModbusService> {
+    const service = new ModbusService();
     const { path, ...opts } = serialOptions;
-    // await service._client.connectRTUBuffered(path, opts);
+    await service._client.connectRTUBuffered(path, opts);
+    return service;
+  }
+
+  public static async createTCP(
+    tcpOptions: TCPOptions,
+  ): Promise<ModbusService> {
+    const service = new ModbusService();
+    const { ip, ...opts } = tcpOptions;
+    await service._client.connectTcpRTUBuffered(ip, opts);
     return service;
   }
 
@@ -30,7 +44,7 @@ export class ModbusSerialService {
     length: number = 1,
   ): Promise<Array<boolean>> {
     this._client.setID(id);
-    return (await this._client.readCoils(address, length)).data;
+    return (await this._client.readCoils(address, length)).data.slice(0, length);
   }
 
   public async readHoldingRegisters(

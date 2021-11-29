@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
-import { ModbusSerialService } from './modbus-serial.service';
+import { ModbusService } from './modbus.service';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -8,7 +8,7 @@ describe('AppController', () => {
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [ModbusSerialService],
+      providers: [ModbusService],
     }).compile();
 
     appController = app.get<AppController>(AppController);

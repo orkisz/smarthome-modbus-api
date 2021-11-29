@@ -12,7 +12,7 @@ export class ModbusReadCoilsQueryHandler
   }
 
   async execute(query: ReadCoilsQuery): Promise<Array<boolean>> {
-    const modbus = await this._modbusProxy.getModbusSerial(query.deviceId);
+    const modbus = await this._modbusProxy.getModbus(query.deviceId);
     return await modbus.readCoils(query.modbusId, query.address, query.length);
   }
 }

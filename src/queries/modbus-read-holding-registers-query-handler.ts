@@ -12,7 +12,7 @@ export class ModbusReadHoldingRegistersQueryHandler
   }
 
   async execute(query: ReadHoldingRegistersQuery): Promise<Array<number>> {
-    const modbus = await this._modbusProxy.getModbusSerial(query.deviceId);
+    const modbus = await this._modbusProxy.getModbus(query.deviceId);
     return await modbus.readHoldingRegisters(query.modbusId, query.address, query.length);
   }
 }

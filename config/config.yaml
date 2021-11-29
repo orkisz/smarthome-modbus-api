@@ -1,10 +1,11 @@
-serialDevices:
-  - path: '/dev/ttyUSB0'
-    baudRate: 9600
-    dataBits: 8
-    stopBits: 1
-    parity: none
-    id: '1'
+#serialDevices:
+#  - path: '/dev/ttyUSB0'
+#    baudRate: 9600
+#    dataBits: 8
+#    stopBits: 1
+#    parity: none
+#    id: '1'
 tcpDevices:
   - address: '192.168.56.103'
     port: 502
+    id: '1'
